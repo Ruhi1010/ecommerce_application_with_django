@@ -24,7 +24,26 @@ class Category(BaseModel):
     
     
     
+
+
+class ColorVariation(BaseModel):
+    color_name = models.CharField(max_length=100)
+    price = models.IntegerField(default=0)
     
+    
+    def __str__(self):
+            return self.color_name
+    
+
+
+class SizeVariation(BaseModel):
+    size_name = models.CharField(max_length=100)    
+    price = models.IntegerField(default=0)
+    
+    
+    def __str__(self):
+            return self.size_name
+  
     
     
     
@@ -36,6 +55,8 @@ class Product(BaseModel):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="products")
     price = models.IntegerField()
     product_description = models.TextField()
+    color_variation = models.ManyToManyField(ColorVariation, blank=True)
+    size_variation = models.ManyToManyField(SizeVariation, blank=True)
     
     
     def save(self, *args, **kwargs):
@@ -51,7 +72,7 @@ class Product(BaseModel):
     
     
     
-    
+  
     
 
 class ProductImage(BaseModel):

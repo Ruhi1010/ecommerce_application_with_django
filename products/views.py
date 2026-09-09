@@ -1,10 +1,15 @@
 from django.shortcuts import render
 
-# Create your views here.
+from products.models import Product
+
 
 
 
 
 
 def get_product(request, slug):
-    return render(request, 'product/product.html', {})
+    try:
+        product = Product.objects.get(slug=slug)
+        return render(request, 'product/product.html', context={'product': product})
+    except Exception as e:
+        print(e)
