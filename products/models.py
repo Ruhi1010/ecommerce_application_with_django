@@ -21,6 +21,8 @@ class Category(BaseModel):
             
     def __str__(self):
             return self.category_name
+        
+        
     
     
     
@@ -68,6 +70,11 @@ class Product(BaseModel):
                 
     def __str__(self):
                 return self.product_name
+            
+    
+    def get_product_price_by_size(self, size):
+            return self.price + SizeVariation.objects.get(size_name=size).price 
+        
     
     
     

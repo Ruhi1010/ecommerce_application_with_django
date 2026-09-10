@@ -1,0 +1,116 @@
+{% extends "base/base.html" %}
+
+{% block start %}
+
+<section class="section-content padding-y bg">
+	<div class="container">
+
+		{% include "base/alert.html" %}
+
+		{% if cart|length == 0 %}
+		<div class="card">
+			<div class="card-body text-center py-5">
+				<h4>Your cart is empty</h4>
+				<p class="text-muted">Looks like you haven't added anything yet.</p>
+				<a href="{% url 'index' %}" class="btn btn-primary">Continue shopping</a>
+			</div>
+		</div>
+		{% else %}
+
+		<div class="row">
+			<main class="col-md-9">
+				<div class="card">
+					<table class="table table-borderless table-shopping-cart">
+						<thead class="text-muted">
+							<tr class="small text-uppercase">
+								<th scope="col">Product</th>
+								<th scope="col" width="150">Quantity</th>
+								<th scope="col" width="120">Price</th>
+								<th scope="col" class="text-right" width="200"> </th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for item in cart %}
+							<tr>
+								<td>
+									<figure class="itemside align-items-center mb-0">
+										<div class="aside">
+											<img src="/media/{{ item.product.product_images.first.image }}" class="img-sm">
+										</div>
+										<figcaption class="info">
+											<a href="{% url 'get_product' item.product.slug %}" class="title text-dark">{{ item.product.product_name }}</a>
+											{% if item.size %}
+											<p class="text-muted small">Size: {{ item.size }}</p>
+											{% endif %}
+										</figcaption>
+									</figure>
+								</td>
+								<td>
+									<form action="{% url 'cart_update' item.key %}" method="post">
+										{% csrf_token %}
+										<select name="quantity" class="form-control" onchange="this.form.submit()">
+											<option value="1" {% if item.quantity == 1 %}selected{% endif %}>1</option>
+											<option value="2" {% if item.quantity == 2 %}selected{% endif %}>2</option>
+											<option value="3" {% if item.quantity == 3 %}selected{% endif %}>3</option>
+											<option value="4" {% if item.quantity == 4 %}selected{% endif %}>4</option>
+											<option value="5" {% if item.quantity == 5 %}selected{% endif %}>5</option>
+											<option value="6" {% if item.quantity == 6 %}selected{% endif %}>6</option>
+											<option value="7" {% if item.quantity == 7 %}selected{% endif %}>7</option>
+											<option value="8" {% if item.quantity == 8 %}selected{% endif %}>8</option>
+											<option value="9" {% if item.quantity == 9 %}selected{% endif %}>9</option>
+											<option value="10" {% if item.quantity == 10 %}selected{% endif %}>10</option>
+										</select>
+									</form>
+								</td>
+								<td>
+									<div class="price-wrap">
+										<var class="price">{{ item.total_price }}</var>
+										<small class="text-muted"> {{ item.price }} each </small>
+									</div>
+								</td>
+								<td class="text-right">
+									<a href="#" class="btn btn-outline-danger"> <i class="fa fa-heart"></i> </a>
+									<a href="{% url 'cart_remove' item.key %}" class="btn btn-outline-danger"> Remove </a>
+								</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div> <!-- card.// -->
+			</main> <!-- col.// -->
+
+			<aside class="col-md-3">
+				<div class="card">
+					<div class="card-body">
+						<h6>Have coupon?</h6>
+						<form class="form-row">
+    <div class="form-group col-sm-7">
+        <input type="text" class="form-control" name="coupon" placeholder="Coupon code">
+    </div>
+    <div class="form-group col-sm-5">
+        <button class="btn btn-block btn-primary">Apply</button>
+    </div>
+</form>
+						</form>
+					</div>
+				</div> <!-- card.// -->
+
+				<div class="card mt-3">
+					<div class="card-body">
+						<dl class="dlist-align">
+							<dt>Total price:</dt>
+							<dd class="text-right">{{ cart.get_total_price }}</dd>
+						</dl>
+						<hr>
+						<a href="#" class="btn btn-primary btn-block"> Checkout </a>
+					</div>
+				</div> <!-- card.// -->
+			</aside> <!-- col.// -->
+		</div> <!-- row.// -->
+
+		{% endif %}
+
+	</div>
+</section>
+
+{% endblock %}
