@@ -28,7 +28,11 @@ def login_page(request):
         user_obj = authenticate(username = email , password= password)
         if user_obj:
             login(request , user_obj)
-            return redirect('/')
+            if not request.POST.get('remember'):
+                # browser session cookie - expires when the browser is closed
+                request.session.set_expiry(0)
+            next_url = request.POST.get('next')
+            return redirect(next_url if next_url else '/')
 
         
 
@@ -75,3 +79,8 @@ def activate_email(request , email_token):
         return redirect('/')
     except Exception as e:
         return HttpResponse('Invalid Email token')
+
+
+def logout_user(request):
+    logout(request)
+    return redirect('/')

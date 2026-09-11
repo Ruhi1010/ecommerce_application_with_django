@@ -1,0 +1,83 @@
+{% extends "base/base.html" %}
+
+{% block start %}
+
+<section class="section-content padding-y bg">
+	<div class="container">
+
+		{% include "base/alert.html" %}
+
+		<h4 class="mb-4">Checkout</h4>
+
+		<div class="row">
+			<main class="col-md-8">
+				<div class="card">
+					<div class="card-body">
+						<h6 class="mb-3">Shipping details</h6>
+						<form method="post">
+							{% csrf_token %}
+							<div class="form-group">
+								<label>Full name</label>
+								<input type="text" name="full_name" class="form-control" value="{{ request.user.get_full_name }}" required>
+							</div>
+							<div class="form-group">
+								<label>Address</label>
+								<textarea name="address" class="form-control" rows="3" required></textarea>
+							</div>
+							<div class="form-group">
+								<label>Phone number</label>
+								<input type="text" name="phone" class="form-control" required>
+							</div>
+							<div class="form-group">
+								<label>Payment method</label>
+								<div class="mt-1">
+									<label class="custom-control custom-radio">
+										<input type="radio" name="payment_method" value="cod" class="custom-control-input" checked>
+										<div class="custom-control-label">Cash on Delivery</div>
+									</label>
+									<label class="custom-control custom-radio">
+										<input type="radio" name="payment_method" value="online" class="custom-control-input">
+										<div class="custom-control-label">Online Payment (Card / Mobile Banking via SSLCommerz)</div>
+									</label>
+								</div>
+							</div>
+							<button type="submit" class="btn btn-primary btn-block">Place order</button>
+						</form>
+					</div>
+				</div> <!-- card.// -->
+			</main>
+
+			<aside class="col-md-4">
+				<div class="card">
+					<div class="card-body">
+						<h6 class="mb-3">Order summary</h6>
+						{% for item in cart %}
+						<div class="d-flex justify-content-between small mb-2">
+							<span>{{ item.product.product_name }} {% if item.size %}({{ item.size }}){% endif %} &times; {{ item.quantity }}</span>
+							<span>{{ item.total_price }}</span>
+						</div>
+						{% endfor %}
+						<hr>
+						<dl class="dlist-align">
+							<dt>Subtotal:</dt>
+							<dd class="text-right">{{ cart.get_subtotal }}</dd>
+						</dl>
+						{% if cart.get_coupon %}
+						<dl class="dlist-align">
+							<dt>Discount ({{ cart.get_coupon.code }}):</dt>
+							<dd class="text-right text-danger">-{{ cart.get_discount_amount }}</dd>
+						</dl>
+						{% endif %}
+						<dl class="dlist-align">
+							<dt><strong>Total:</strong></dt>
+							<dd class="text-right"><strong>{{ cart.get_total_after_discount }}</strong></dd>
+						</dl>
+					</div>
+				</div> <!-- card.// -->
+			</aside>
+		</div> <!-- row.// -->
+
+	</div>
+</section>
+
+{% endblock %}

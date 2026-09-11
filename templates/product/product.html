@@ -26,24 +26,9 @@
 			<article class="content-body">
 			
 			<h2 class="title">{{ product.product_name }}</h2>
-			
-			<div class="rating-wrap my-3">
-				<ul class="rating-stars">
-					<li style="width:80%" class="stars-active"> 
-						<i class="fa fa-star"></i> <i class="fa fa-star"></i> 
-						<i class="fa fa-star"></i> <i class="fa fa-star"></i> 
-						<i class="fa fa-star"></i> 
-					</li>
-					<li>
-						<i class="fa fa-star"></i> <i class="fa fa-star"></i> 
-						<i class="fa fa-star"></i> <i class="fa fa-star"></i> 
-						<i class="fa fa-star"></i> 
-					</li>
-				</ul>
-				<small class="label-rating text-muted">132 reviews</small>
-				<small class="label-rating text-success"> <i class="fa fa-clipboard-check"></i> 154 orders </small>
-			</div> <!-- rating-wrap.// -->
-			
+
+			<p class="text-muted small mb-3">Category: {{ product.category.category_name }}</p>
+
 			<div class="mb-3"> 
 				<var class="price h4"><b>৳</b>
 					{% if updated_price %}
@@ -52,23 +37,10 @@
 					{{ product.price }}
 					{% endif %}
 					.00</var> 
-				<span class="text-muted">/per kg</span> 
 			</div> <!-- price-detail-wrap .// -->
 			
 			<p>{{ product.product_description }}</p>
-			
-			
-			<dl class="row">
-			  <dt class="col-sm-3">Model#</dt>
-			  <dd class="col-sm-9">Odsy-1000</dd>
-			
-			  <dt class="col-sm-3">Color</dt>
-			  <dd class="col-sm-9">Brown</dd>
-			
-			  <dt class="col-sm-3">Delivery</dt>
-			  <dd class="col-sm-9">Russia, USA, and Europe </dd>
-			</dl>
-			
+
 			<hr>
 			<form action="{% url 'cart_add' product.slug %}" method="post">
 				{% csrf_token %}
@@ -104,9 +76,13 @@
 
 				</div> <!-- row.// -->
 			
+				<button type="submit" name="buy_now" value="1" class="btn  btn-primary"> Buy now </button>
 				<button type="submit" class="btn  btn-outline-primary"> <span class="text">Add to cart</span> <i class="fas fa-shopping-cart"></i>  </button>
-				<a href="{% url 'cart_detail' %}" class="btn  btn-primary"> Buy now </a>
 			</form>
+			<a href="{% url 'wishlist_toggle' product.slug %}" class="btn btn-outline-danger mt-2">
+				<i class="fa fa-heart {% if product.slug in wishlist.slugs %}text-danger{% endif %}"></i>
+				{% if product.slug in wishlist.slugs %} Saved to wishlist {% else %} Save to wishlist {% endif %}
+			</a>
 			</article> <!-- product-info-aside .// -->
 					</main> <!-- col.// -->
 				</div> <!-- row.// -->

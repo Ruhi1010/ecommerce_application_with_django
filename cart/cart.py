@@ -1,14 +1,17 @@
 from decimal import Decimal
 from products.models import Product
+from cart.models import Coupon
 
 CART_SESSION_KEY = 'cart'
+COUPON_SESSION_KEY = 'coupon_id'
 
 
 class Cart:
     """
     A session-backed shopping cart.
-    No database table is needed - everything lives in request.session,
-    so it works for guests and stays with a user across a visit.
+    No database table is needed for the cart items themselves - everything
+    lives in request.session, so it works for guests and stays with a user
+    across a visit. A coupon, if applied, is looked up from the Coupon model.
     """
 
     def __init__(self, request):
@@ -66,6 +69,7 @@ class Cart:
 
     def clear(self):
         self.session[CART_SESSION_KEY] = {}
+        self.session.pop(COUPON_SESSION_KEY, None)
         self.save()
 
     def __iter__(self):
@@ -84,8 +88,52 @@ class Cart:
     def __len__(self):
         return sum(item['quantity'] for item in self.cart.values())
 
-    def get_total_price(self):
+    def get_subtotal(self):
         return sum(
             Decimal(item['price']) * item['quantity']
             for item in self.cart.values()
         )
+
+    # Kept for backwards compatibility with the earlier version of the cart.
+    def get_total_price(self):
+        return self.get_subtotal()
+
+    # ---------------- coupon handling ----------------
+
+    def apply_coupon(self, code):
+        try:
+            coupon = Coupon.objects.get(code__iexact=code.strip())
+        except Coupon.DoesNotExist:
+            return False
+
+        if not coupon.is_valid():
+            return False
+
+        self.session[COUPON_SESSION_KEY] = coupon.id
+        self.save()
+        return True
+
+    def remove_coupon(self):
+        self.session.pop(COUPON_SESSION_KEY, None)
+        self.save()
+
+    def get_coupon(self):
+        coupon_id = self.session.get(COUPON_SESSION_KEY)
+        if not coupon_id:
+            return None
+        try:
+            coupon = Coupon.objects.get(id=coupon_id)
+        except Coupon.DoesNotExist:
+            return None
+        if not coupon.is_valid():
+            return None
+        return coupon
+
+    def get_discount_amount(self):
+        coupon = self.get_coupon()
+        if not coupon:
+            return Decimal('0')
+        return (self.get_subtotal() * coupon.discount_percent / Decimal('100')).quantize(Decimal('1'))
+
+    def get_total_after_discount(self):
+        return self.get_subtotal() - self.get_discount_amount()

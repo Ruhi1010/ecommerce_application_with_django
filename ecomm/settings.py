@@ -41,8 +41,10 @@ INSTALLED_APPS = [
     'products',
     'accounts',
     'home',
-    'cart'
-    
+    'cart',
+    'orders',
+    'payments',
+
 ]
 
 MIDDLEWARE = [
@@ -69,6 +71,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'cart.context_processors.cart',
+                'cart.context_processors.wishlist',
             ],
         },
     },
@@ -149,6 +152,15 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
+
+
+# SSLCommerz payment gateway.
+# Get a free sandbox store_id / store_passwd at:
+# https://developer.sslcommerz.com/registration/
+# Leave these blank to keep online payment disabled (Cash on Delivery still works).
+SSLCOMMERZ_STORE_ID = ''
+SSLCOMMERZ_STORE_PASSWORD = ''
+SSLCOMMERZ_IS_SANDBOX = True
 
 
 

@@ -1,0 +1,42 @@
+{% extends "base/base.html" %}
+
+{% block start %}
+
+<section class="section-content padding-y bg">
+	<div class="container">
+
+		<div class="card">
+			<div class="card-body text-center py-5">
+				<i class="fa fa-check-circle text-success" style="font-size: 48px;"></i>
+				<h4 class="mt-3">Thank you, {{ order.full_name }}!</h4>
+				<p class="text-muted">Your order has been placed successfully.</p>
+				<p class="small text-muted">Order ID: {{ order.uid }}</p>
+				<p class="small">
+					Payment method: {{ order.get_payment_method_display }} &middot;
+					<span class="{% if order.payment_status == 'paid' %}text-success{% elif order.payment_status == 'failed' %}text-danger{% else %}text-muted{% endif %}">
+						{{ order.get_payment_status_display }}
+					</span>
+				</p>
+
+				<div class="text-left mt-4" style="max-width: 400px; margin: 0 auto;">
+					{% for item in order.items.all %}
+					<div class="d-flex justify-content-between small mb-2">
+						<span>{{ item.product_name }} {% if item.size %}({{ item.size }}){% endif %} &times; {{ item.quantity }}</span>
+						<span>{{ item.get_total }}</span>
+					</div>
+					{% endfor %}
+					<hr>
+					<dl class="dlist-align">
+						<dt><strong>Total paid:</strong></dt>
+						<dd class="text-right"><strong>{{ order.total }}</strong></dd>
+					</dl>
+				</div>
+
+				<a href="{% url 'index' %}" class="btn btn-primary mt-3">Continue shopping</a>
+			</div>
+		</div>
+
+	</div>
+</section>
+
+{% endblock %}

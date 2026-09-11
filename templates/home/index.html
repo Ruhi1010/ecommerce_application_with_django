@@ -5,12 +5,27 @@
 
 
 <div class="container mt-5 pt-5">
+
+		{% if query %}
+		<p class="text-muted">Search results for "{{ query }}" ({{ products|length }} found)</p>
+		{% endif %}
+
+		{% if not products %}
+		<div class="text-center py-5">
+			<h5>No products found</h5>
+			<a href="{% url 'index' %}" class="btn btn-primary mt-2">View all products</a>
+		</div>
+		{% else %}
+
 		<div class="row">
 
 
 			{% for product in products %}
 			<div class="col-md-3">
 				<figure class="card card-product-grid">
+					<a href="{% url 'wishlist_toggle' product.slug %}" class="btn btn-outline-danger btn-sm" style="position:absolute; top:8px; right:8px; z-index:2;">
+						<i class="fa fa-heart {% if product.slug in wishlist.slugs %}text-danger{% endif %}"></i>
+					</a>
 					<div class="img-wrap"> <img src="/media/{{ product.product_images.first.image }}"> </div>
 					<figcaption class="info-wrap border-top">
 						<a href="{% url 'get_product' product.slug%}" class="title">
@@ -23,6 +38,7 @@
 
 
 		</div>
+		{% endif %}
 
 		</div>
 

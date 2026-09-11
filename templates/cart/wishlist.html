@@ -1,0 +1,43 @@
+{% extends "base/base.html" %}
+
+{% block start %}
+
+<section class="section-content padding-y bg">
+	<div class="container">
+
+		{% include "base/alert.html" %}
+
+		<h4 class="mb-4">Your wishlist</h4>
+
+		{% if not wishlist|length %}
+		<div class="card">
+			<div class="card-body text-center py-5">
+				<h5>Your wishlist is empty</h5>
+				<a href="{% url 'index' %}" class="btn btn-primary mt-2">Continue shopping</a>
+			</div>
+		</div>
+		{% else %}
+		<div class="row">
+			{% for product in wishlist %}
+			<div class="col-md-3 col-6 mb-4">
+				<div class="card h-100">
+					<a href="{% url 'get_product' product.slug %}">
+						<img src="/media/{{ product.product_images.first.image }}" class="card-img-top">
+					</a>
+					<div class="card-body">
+						<a href="{% url 'get_product' product.slug %}" class="title text-dark">{{ product.product_name }}</a>
+						<div class="price mt-1">৳ {{ product.price }}</div>
+						<a href="{% url 'wishlist_toggle' product.slug %}" class="btn btn-outline-danger btn-sm mt-2">
+							<i class="fa fa-heart text-danger"></i> Remove
+						</a>
+					</div>
+				</div>
+			</div>
+			{% endfor %}
+		</div>
+		{% endif %}
+
+	</div>
+</section>
+
+{% endblock %}

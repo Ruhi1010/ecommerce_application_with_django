@@ -1,0 +1,50 @@
+{% extends "base/base.html" %}
+
+{% block start %}
+
+<section class="section-content padding-y bg">
+	<div class="container">
+
+		<h4 class="mb-4">Your orders</h4>
+
+		{% if not orders %}
+		<p class="text-muted">You haven't placed any orders yet.</p>
+		{% else %}
+		<div class="card">
+			<table class="table mb-0">
+				<thead class="text-muted">
+					<tr class="small text-uppercase">
+						<th>Order</th>
+						<th>Date</th>
+						<th>Status</th>
+						<th>Payment</th>
+						<th class="text-right">Total</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for order in orders %}
+					<tr>
+						<td>{{ order.uid|truncatechars:8 }}</td>
+						<td>{{ order.created_at|date:"M d, Y" }}</td>
+						<td><span class="badge badge-secondary">{{ order.get_status_display }}</span></td>
+						<td>
+							{{ order.get_payment_method_display }} &middot;
+							<span class="{% if order.payment_status == 'paid' %}text-success{% elif order.payment_status == 'failed' %}text-danger{% else %}text-muted{% endif %}">
+								{{ order.get_payment_status_display }}
+							</span>
+							{% if order.payment_method == 'online' and order.payment_status == 'failed' %}
+							<br><a href="{% url 'payment_initiate' order.uid %}" class="small">Retry payment</a>
+							{% endif %}
+						</td>
+						<td class="text-right">{{ order.total }}</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+		{% endif %}
+
+	</div>
+</section>
+
+{% endblock %}

@@ -69,7 +69,9 @@
 									</div>
 								</td>
 								<td class="text-right">
-									<a href="#" class="btn btn-outline-danger"> <i class="fa fa-heart"></i> </a>
+									<a href="{% url 'wishlist_toggle' item.product.slug %}" class="btn btn-outline-danger">
+										<i class="fa fa-heart {% if item.product.slug in wishlist.slugs %}text-danger{% endif %}"></i>
+									</a>
 									<a href="{% url 'cart_remove' item.key %}" class="btn btn-outline-danger"> Remove </a>
 								</td>
 							</tr>
@@ -83,26 +85,42 @@
 				<div class="card">
 					<div class="card-body">
 						<h6>Have coupon?</h6>
-						<form class="form-row">
-    <div class="form-group col-sm-7">
-        <input type="text" class="form-control" name="coupon" placeholder="Coupon code">
-    </div>
-    <div class="form-group col-sm-5">
-        <button class="btn btn-block btn-primary">Apply</button>
-    </div>
-</form>
+						<form method="post" action="{% url 'cart_apply_coupon' %}" class="form-row">
+							{% csrf_token %}
+							<div class="form-group col-sm-8">
+								<input type="text" class="form-control" name="code" placeholder="Coupon code" value="{% if cart.get_coupon %}{{ cart.get_coupon.code }}{% endif %}">
+							</div>
+							<div class="form-group col-sm-4">
+								<button class="btn btn-block btn-primary text-nowrap">Apply</button>
+							</div>
 						</form>
+						{% if cart.get_coupon %}
+						<p class="small text-success mb-0">
+							"{{ cart.get_coupon.code }}" applied (-{{ cart.get_coupon.discount_percent }}%)
+							&middot; <a href="{% url 'cart_remove_coupon' %}">remove</a>
+						</p>
+						{% endif %}
 					</div>
 				</div> <!-- card.// -->
 
 				<div class="card mt-3">
 					<div class="card-body">
 						<dl class="dlist-align">
-							<dt>Total price:</dt>
-							<dd class="text-right">{{ cart.get_total_price }}</dd>
+							<dt>Subtotal:</dt>
+							<dd class="text-right">{{ cart.get_subtotal }}</dd>
+						</dl>
+						{% if cart.get_coupon %}
+						<dl class="dlist-align">
+							<dt>Discount:</dt>
+							<dd class="text-right text-danger">-{{ cart.get_discount_amount }}</dd>
+						</dl>
+						{% endif %}
+						<dl class="dlist-align">
+							<dt><strong>Total:</strong></dt>
+							<dd class="text-right"><strong>{{ cart.get_total_after_discount }}</strong></dd>
 						</dl>
 						<hr>
-						<a href="#" class="btn btn-primary btn-block"> Checkout </a>
+						<a href="{% url 'checkout' %}" class="btn btn-primary btn-block"> Checkout </a>
 					</div>
 				</div> <!-- card.// -->
 			</aside> <!-- col.// -->
